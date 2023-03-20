@@ -41,7 +41,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+	unsigned int data_raw[1024], *pdata_raw = &data_raw[0];
+	char data_ascii[1024], *pdata_ascii = &data_ascii[0];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -228,10 +229,27 @@ void TIM1_UP_TIM10_IRQHandler(void)
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
 	if (LL_TIM_IsActiveFlag_UPDATE(TIM1))
 	{
-		(TIM1);
+		LL_TIM_ClearFlag_UPDATE(TIM1);
 		DISABLE_TIM1();
+		pdata_raw++;
 	    SET_GPIO_TEST_PIN();
+	    *pdata_raw = LL_GPIO_ReadInputPort(GPIOA);
 	    RESET_GPIO_TEST_PIN();
+	    if (pdata_raw < &data_raw[0] || pdata_raw > &data_raw[1023])
+	    {
+	    	pdata_raw = &data_raw[0];
+	    }
+
+	    if ((*pdata_raw & 0x0400) == 0x0400)
+	    {
+	    	*pdata_ascii = (*pdata_raw >> 2);
+	    	pdata_ascii++;
+	    }
+
+	    if (pdata_ascii < &data_ascii[0] || pdata_ascii > &data_ascii[1023])
+		{
+			pdata_ascii = &data_ascii[0];
+		}
 	}
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
 
