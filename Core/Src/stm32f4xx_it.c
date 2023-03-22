@@ -43,6 +43,7 @@
 /* USER CODE BEGIN PV */
 	unsigned int data_raw[1024], *pdata_raw = &data_raw[0];
 	char data_ascii[1024], *pdata_ascii = &data_ascii[0];
+	volatile unsigned char lcd_data_full = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -248,7 +249,13 @@ void TIM1_UP_TIM10_IRQHandler(void)
 
 	    if (pdata_ascii < &data_ascii[0] || pdata_ascii > &data_ascii[1023])
 		{
+	    	if (pdata_ascii > &data_ascii[1023])
+	    	{
+	    		LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_0);
+	    		lcd_data_full = 1;
+	    	}
 			pdata_ascii = &data_ascii[0];
+
 		}
 	}
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */

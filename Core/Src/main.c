@@ -20,6 +20,7 @@
 #include "main.h"
 #include "tim.h"
 #include "gpio.h"
+#include <string.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -44,7 +45,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+extern volatile unsigned char lcd_data_full;
+extern char data_ascii[1024];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,7 +98,20 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	  if (lcd_data_full == 1)
+	  {
+		  if (strstr( data_ascii, "admin" ) == NULL)
+		  {
 
+			  RESET_GPIO_TEST_PIN();
+		  }
+		  else
+		  {
+			  SET_GPIO_TEST_PIN();
+		  }
+		  LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);
+		  lcd_data_full = 0;
+	  }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
