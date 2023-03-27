@@ -19,12 +19,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
-#include <string.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,6 +47,8 @@
 /* USER CODE BEGIN PV */
 extern volatile unsigned char lcd_data_full;
 extern char data_ascii[1024];
+char data_to_print[1024], *pdata_to_print, *pdata_ascii_read, linefeed = 0;
+int uart_count = 0, line_count = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -89,6 +91,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM1_Init();
+  MX_USART1_UART_Init();
+  HAL_UART_MspInit(&huart1);
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -97,10 +101,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
 	  if (lcd_data_full == 1)
 	  {
-		  if (strstr( data_ascii, "admin" ) == NULL)
+		  if (strstr( data_ascii, "bouteille" ) == NULL)
 		  {
 
 			  RESET_GPIO_TEST_PIN();
@@ -111,7 +114,48 @@ int main(void)
 		  }
 		  LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);
 		  lcd_data_full = 0;
+		  pdata_to_print = &data_to_print[0];
+		  pdata_ascii_read = &data_ascii[0];
+		  uart_count = 0;
+		  line_count = 0;
+		  while(pdata_ascii_read < &data_ascii[1023] && line_count < 12)
+		  {
+			  if(*pdata_ascii_read != ' ')
+			  {
+				  *pdata_to_print = *pdata_ascii_read;
+				  pdata_to_print++;
+				  uart_count++;
+				  linefeed = 0;
+			  }
+
+			  if(*pdata_ascii_read == ' ' && *(pdata_ascii_read - 1) != ' ')
+			  {
+				  *pdata_to_print = *pdata_ascii_read;
+				  pdata_to_print++;
+				  uart_count++;
+				  linefeed = 0;
+			  }
+
+			  if(*pdata_ascii_read == ' ' && *(pdata_ascii_read - 1) == ' ' && linefeed == 0)
+			  {
+				  linefeed = 0x0A;
+				  line_count++;
+				  *pdata_to_print = linefeed;
+				  uart_count++;
+				  pdata_to_print++;
+
+			  }
+
+
+			  pdata_ascii_read++;
+		  }
+		  linefeed = 0x0;
+		  pdata_to_print = &data_to_print[0];
+		  HAL_UART_Transmit(&huart1, pdata_to_print, uart_count,10000);
+		  pdata_to_print = &data_to_print[0];
 	  }
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
