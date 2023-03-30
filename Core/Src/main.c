@@ -15,6 +15,28 @@
   *
   ******************************************************************************
   */
+
+
+/*
+ *
+ * IN1 OUT1 : RESET
+ * IN1 OUT2 : 2
+ * IN1 OUT3 : 6
+ * IN1 OUT4 : 0
+ * IN2 OUT1 : ENTER
+ * IN2 OUT2 : 1
+ * IN2 OUT3 : 5
+ * IN2 OUT4 : 9
+ * IN3 OUT1 : START
+ * IN3 OUT2 : STOP
+ * IN3 OUT3 : 4
+ * IN3 OUT4 : 8
+ * IN4 OUT1 : HAUT
+ * IN4 OUT2 : BAS
+ * IN4 OUT3 : 3
+ * IN4 OUT4 : 7
+ *
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -92,9 +114,8 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM1_Init();
   MX_USART1_UART_Init();
-  HAL_UART_MspInit(&huart1);
   /* USER CODE BEGIN 2 */
-
+  SET_GPIO_EN();
   /* USER CODE END 2 */
 
   /* Infinite loop */
