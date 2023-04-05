@@ -69,8 +69,8 @@
 /* USER CODE BEGIN PV */
 extern volatile unsigned char lcd_data_full;
 extern char data_ascii[1024];
-char data_to_print[1024], *pdata_to_print, *pdata_ascii_read, linefeed = 0, rxBuffer[10];
-int uart_count = 0, line_count = 0;
+char data_to_print[1024], *pdata_to_print, *pdata_ascii_read, linefeed = 0, rxBuffer[10], code_string[4];
+int uart_count = 0, line_count = 0, code = 9999, lcd_count = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,6 +92,7 @@ void Push_6(void);
 void Push_7(void);
 void Push_8(void);
 void Push_9(void);
+void Push_Button(char);
 
 void Push_RESET(void)
 {
@@ -247,6 +248,80 @@ void Push_9(void)
 	SET_GPIO_EN();
 }
 
+void Push_Button(char button)
+{
+	switch(button)
+			{
+
+				case '1':
+					Push_1();
+					break;
+
+				case '2':
+					Push_2();
+					break;
+
+				case '3':
+					Push_3();
+					break;
+
+				case '4':
+					Push_4();
+					break;
+
+				case '5':
+					Push_5();
+					break;
+
+				case '6':
+					Push_6();
+					break;
+
+				case '7':
+					Push_7();
+					break;
+
+				case '8':
+					Push_8();
+					break;
+
+				case '9':
+					Push_9();
+					break;
+
+				case '0':
+					Push_0();
+					break;
+
+				case 'z':
+					Push_HAUT();
+					break;
+
+				case 's':
+					Push_BAS();
+					break;
+
+				case 'e':
+					Push_ENTER();
+					break;
+
+				case 'r':
+					Push_RESET();
+					break;
+
+				case 'a':
+					Push_START();
+					break;
+
+				case 't':
+					Push_STOP();
+					break;
+
+				// operator doesn't match any case constant +, -, *, /
+				default:
+					HAL_Delay(10);
+			}
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -269,7 +344,7 @@ int main(void)
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */szrr
+  /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
 
@@ -290,88 +365,54 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-	  while(HAL_UART_Receive (&huart1, rxBuffer, 1, 1000) == HAL_TIMEOUT)
+
+	  sprintf(code_string, "%04d", code);
+	  Push_RESET();
+	  HAL_Delay(HOLD_DELAY);
+	  Push_BAS();
+	  HAL_Delay(HOLD_DELAY);
+	  Push_BAS();
+	  HAL_Delay(HOLD_DELAY);
+	  Push_ENTER();
+
+	  HAL_Delay(HOLD_DELAY);
+	  Push_BAS();
+	  HAL_Delay(HOLD_DELAY);
+	  Push_BAS();
+	  HAL_Delay(HOLD_DELAY);
+	  Push_ENTER();
+	  HAL_Delay(HOLD_DELAY);
+
+
+	  while (1)
 	  {
 
-	  }
-	  HAL_UART_Transmit(&huart1, rxBuffer, 1, 1000);
 
-		switch(rxBuffer[0])
-		{
+	if (lcd_count > 10)
+	{
+		sprintf(code_string, "%04d", code);
+		HAL_UART_Transmit(&huart1, code_string, 4,10000);
+		HAL_UART_Transmit(&huart1, '\n\r', 1,10000);
 
-			case '1':
-				Push_1();
-				break;
+		Push_Button(code_string[0]);
+		HAL_Delay(HOLD_DELAY);
+		Push_Button(code_string[1]);
+		HAL_Delay(HOLD_DELAY);
+		Push_Button(code_string[2]);
+		HAL_Delay(HOLD_DELAY);
+		Push_Button(code_string[3]);
+		HAL_Delay(HOLD_DELAY);
+		Push_ENTER();
 
-			case '2':
-				Push_2();
-				break;
 
-			case '3':
-				Push_3();
-				break;
 
-			case '4':
-				Push_4();
-				break;
 
-			case '5':
-				Push_5();
-				break;
-
-			case '6':
-				Push_6();
-				break;
-
-			case '7':
-				Push_7();
-				break;
-
-			case '8':
-				Push_8();
-				break;
-
-			case '9':
-				Push_9();
-				break;
-
-			case '0':
-				Push_0();
-				break;
-
-			case 'z':
-				Push_HAUT();
-				break;
-
-			case 's':
-				Push_BAS();
-				break;
-
-			case 'e':
-				Push_ENTER();
-				break;
-
-			case 'r':
-				Push_RESET();
-				break;
-
-			case 'a':
-				Push_START();
-				break;
-
-			case 't':
-				Push_STOP();
-				break;
-
-			// operator doesn't match any case constant +, -, *, /
-			default:
-				HAL_Delay(10);
-		}
+		code--;
+	}
 
 	  if (lcd_data_full == 1)
 	  {
+		  lcd_count++;
 		  if (strstr( data_ascii, "bouteille" ) == NULL)
 		  {
 
