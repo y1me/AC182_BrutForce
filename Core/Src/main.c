@@ -56,7 +56,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define		HOLD_DELAY 		50
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -69,7 +69,7 @@
 /* USER CODE BEGIN PV */
 extern volatile unsigned char lcd_data_full;
 extern char data_ascii[1024];
-char data_to_print[1024], *pdata_to_print, *pdata_ascii_read, linefeed = 0;
+char data_to_print[1024], *pdata_to_print, *pdata_ascii_read, linefeed = 0, rxBuffer[10];
 int uart_count = 0, line_count = 0;
 /* USER CODE END PV */
 
@@ -79,7 +79,7 @@ void SystemClock_Config(void);
 void Push_RESET(void);
 void Push_ENTER(void);
 void Push_START(void);
-void Push_ST0P(void);
+void Push_STOP(void);
 void Push_HAUT(void);
 void Push_BAS(void);
 void Push_0(void);
@@ -99,7 +99,7 @@ void Push_RESET(void)
 	SET_MUX_Y2();
 	SET_DEMUX_Y2();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 }
 void Push_ENTER(void)
@@ -108,7 +108,7 @@ void Push_ENTER(void)
 	SET_MUX_Y1();
 	SET_DEMUX_Y2();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 
 }
@@ -118,17 +118,17 @@ void Push_START(void)
 	SET_MUX_Y0();
 	SET_DEMUX_Y2();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 
 }
-void Push_ST0P(void)
+void Push_STOP(void)
 {
 	//* IN3 OUT2 : STOP
 	SET_MUX_Y0();
 	SET_DEMUX_Y1();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 }
 void Push_HAUT(void)
@@ -137,7 +137,7 @@ void Push_HAUT(void)
 	SET_MUX_Y3();
 	SET_DEMUX_Y2();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 }
 void Push_BAS(void)
@@ -146,7 +146,7 @@ void Push_BAS(void)
 	SET_MUX_Y3();
 	SET_DEMUX_Y1();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 }
 void Push_0(void)
@@ -155,7 +155,7 @@ void Push_0(void)
 	SET_MUX_Y2();
 	SET_DEMUX_Y3();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 
 }
@@ -165,7 +165,7 @@ void Push_1(void)
 	SET_MUX_Y1();
 	SET_DEMUX_Y1();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 
 }
@@ -175,7 +175,7 @@ void Push_2(void)
 	SET_MUX_Y2();
 	SET_DEMUX_Y1();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 
 }
@@ -185,7 +185,7 @@ void Push_3(void)
 	SET_MUX_Y3();
 	SET_DEMUX_Y0();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 
 }
@@ -195,7 +195,7 @@ void Push_4(void)
 	SET_MUX_Y0();
 	SET_DEMUX_Y0();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 
 }
@@ -205,7 +205,7 @@ void Push_5(void)
 	SET_MUX_Y1();
 	SET_DEMUX_Y0();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 
 }
@@ -215,7 +215,7 @@ void Push_6(void)
 	SET_MUX_Y2();
 	SET_DEMUX_Y0();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 
 }
@@ -225,7 +225,7 @@ void Push_7(void)
 	SET_MUX_Y3();
 	SET_DEMUX_Y3();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 }
 void Push_8(void)
@@ -234,7 +234,7 @@ void Push_8(void)
 	SET_MUX_Y0();
 	SET_DEMUX_Y3();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 }
 void Push_9(void)
@@ -243,7 +243,7 @@ void Push_9(void)
 	SET_MUX_Y1();
 	SET_DEMUX_Y3();
 	RESET_GPIO_EN();
-	HAL_Delay(10);
+	HAL_Delay(HOLD_DELAY);
 	SET_GPIO_EN();
 }
 
@@ -269,7 +269,7 @@ int main(void)
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */szrr
 
   /* USER CODE END Init */
 
@@ -292,6 +292,84 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  while(HAL_UART_Receive (&huart1, rxBuffer, 1, 1000) == HAL_TIMEOUT)
+	  {
+
+	  }
+	  HAL_UART_Transmit(&huart1, rxBuffer, 1, 1000);
+
+		switch(rxBuffer[0])
+		{
+
+			case '1':
+				Push_1();
+				break;
+
+			case '2':
+				Push_2();
+				break;
+
+			case '3':
+				Push_3();
+				break;
+
+			case '4':
+				Push_4();
+				break;
+
+			case '5':
+				Push_5();
+				break;
+
+			case '6':
+				Push_6();
+				break;
+
+			case '7':
+				Push_7();
+				break;
+
+			case '8':
+				Push_8();
+				break;
+
+			case '9':
+				Push_9();
+				break;
+
+			case '0':
+				Push_0();
+				break;
+
+			case 'z':
+				Push_HAUT();
+				break;
+
+			case 's':
+				Push_BAS();
+				break;
+
+			case 'e':
+				Push_ENTER();
+				break;
+
+			case 'r':
+				Push_RESET();
+				break;
+
+			case 'a':
+				Push_START();
+				break;
+
+			case 't':
+				Push_STOP();
+				break;
+
+			// operator doesn't match any case constant +, -, *, /
+			default:
+				HAL_Delay(10);
+		}
+
 	  if (lcd_data_full == 1)
 	  {
 		  if (strstr( data_ascii, "bouteille" ) == NULL)
@@ -303,50 +381,55 @@ int main(void)
 		  }
 		  else
 		  {
-			  Push_RESET();
+			  //Push_RESET();
 			  SET_GPIO_TEST_PIN();
+
+
+
 		  }
-		  LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);
-		  lcd_data_full = 0;
-		  pdata_to_print = &data_to_print[0];
-		  pdata_ascii_read = &data_ascii[0];
-		  uart_count = 0;
-		  line_count = 0;
-		  while(pdata_ascii_read < &data_ascii[1023] && line_count < 12)
-		  {
-			  if(*pdata_ascii_read != ' ')
+
+			  LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);
+			  lcd_data_full = 0;
+			  pdata_to_print = &data_to_print[0];
+			  pdata_ascii_read = &data_ascii[0];
+			  uart_count = 0;
+			  line_count = 0;
+			  while(pdata_ascii_read < &data_ascii[1023] && line_count < 12)
 			  {
-				  *pdata_to_print = *pdata_ascii_read;
-				  pdata_to_print++;
-				  uart_count++;
-				  linefeed = 0;
+				  if(*pdata_ascii_read != ' ')
+				  {
+					  *pdata_to_print = *pdata_ascii_read;
+					  pdata_to_print++;
+					  uart_count++;
+					  linefeed = 0;
+				  }
+
+				  if(*pdata_ascii_read == ' ' && *(pdata_ascii_read - 1) != ' ')
+				  {
+					  *pdata_to_print = *pdata_ascii_read;
+					  pdata_to_print++;
+					  uart_count++;
+					  linefeed = 0;
+				  }
+
+				  if(*pdata_ascii_read == ' ' && *(pdata_ascii_read - 1) == ' ' && linefeed == 0)
+				  {
+					  linefeed = 0x0A;
+					  line_count++;
+					  *pdata_to_print = linefeed;
+					  uart_count++;
+					  pdata_to_print++;
+
+				  }
+
+
+				  pdata_ascii_read++;
 			  }
+			  linefeed = 0x0;
+			  pdata_to_print = &data_to_print[0];
+			  HAL_UART_Transmit(&huart1, pdata_to_print, uart_count,10000);
+			  pdata_to_print = &data_to_print[0];
 
-			  if(*pdata_ascii_read == ' ' && *(pdata_ascii_read - 1) != ' ')
-			  {
-				  *pdata_to_print = *pdata_ascii_read;
-				  pdata_to_print++;
-				  uart_count++;
-				  linefeed = 0;
-			  }
-
-			  if(*pdata_ascii_read == ' ' && *(pdata_ascii_read - 1) == ' ' && linefeed == 0)
-			  {
-				  linefeed = 0x0A;
-				  line_count++;
-				  *pdata_to_print = linefeed;
-				  uart_count++;
-				  pdata_to_print++;
-
-			  }
-
-
-			  pdata_ascii_read++;
-		  }
-		  linefeed = 0x0;
-		  pdata_to_print = &data_to_print[0];
-		  HAL_UART_Transmit(&huart1, pdata_to_print, uart_count,10000);
-		  pdata_to_print = &data_to_print[0];
 	  }
     /* USER CODE END WHILE */
 
