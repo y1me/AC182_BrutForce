@@ -76,6 +76,176 @@ int uart_count = 0, line_count = 0;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+void Push_RESET(void);
+void Push_ENTER(void);
+void Push_START(void);
+void Push_ST0P(void);
+void Push_HAUT(void);
+void Push_BAS(void);
+void Push_0(void);
+void Push_1(void);
+void Push_2(void);
+void Push_3(void);
+void Push_4(void);
+void Push_5(void);
+void Push_6(void);
+void Push_7(void);
+void Push_8(void);
+void Push_9(void);
+
+void Push_RESET(void)
+{
+	//* IN1 OUT1 : RESET
+	SET_MUX_Y2();
+	SET_DEMUX_Y2();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+}
+void Push_ENTER(void)
+{
+	//* IN2 OUT1 : ENTER
+	SET_MUX_Y1();
+	SET_DEMUX_Y2();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+
+}
+void Push_START(void)
+{
+	//* IN3 OUT1 : START
+	SET_MUX_Y0();
+	SET_DEMUX_Y2();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+
+}
+void Push_ST0P(void)
+{
+	//* IN3 OUT2 : STOP
+	SET_MUX_Y0();
+	SET_DEMUX_Y1();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+}
+void Push_HAUT(void)
+{
+	//* IN4 OUT1 : HAUT
+	SET_MUX_Y3();
+	SET_DEMUX_Y2();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+}
+void Push_BAS(void)
+{
+	//* IN4 OUT2 : BAS
+	SET_MUX_Y3();
+	SET_DEMUX_Y1();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+}
+void Push_0(void)
+{
+	//* IN1 OUT4 : 0
+	SET_MUX_Y2();
+	SET_DEMUX_Y3();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+
+}
+void Push_1(void)
+{
+	//* IN2 OUT2 : 1
+	SET_MUX_Y1();
+	SET_DEMUX_Y1();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+
+}
+void Push_2(void)
+{
+	//* IN1 OUT2 : 2
+	SET_MUX_Y2();
+	SET_DEMUX_Y1();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+
+}
+void Push_3(void)
+{
+	//* IN4 OUT3 : 3
+	SET_MUX_Y3();
+	SET_DEMUX_Y0();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+
+}
+void Push_4(void)
+{
+	//* IN3 OUT3 : 4
+	SET_MUX_Y0();
+	SET_DEMUX_Y0();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+
+}
+void Push_5(void)
+{
+	//* IN2 OUT3 : 5
+	SET_MUX_Y1();
+	SET_DEMUX_Y0();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+
+}
+void Push_6(void)
+{
+	//* IN1 OUT3 : 6
+	SET_MUX_Y2();
+	SET_DEMUX_Y0();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+
+}
+void Push_7(void)
+{
+	//* IN4 OUT4 : 7
+	SET_MUX_Y3();
+	SET_DEMUX_Y3();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+}
+void Push_8(void)
+{
+	//* IN3 OUT4 : 8
+	SET_MUX_Y0();
+	SET_DEMUX_Y3();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+}
+void Push_9(void)
+{
+	//* IN2 OUT4 : 9
+	SET_MUX_Y1();
+	SET_DEMUX_Y3();
+	RESET_GPIO_EN();
+	HAL_Delay(10);
+	SET_GPIO_EN();
+}
 
 /* USER CODE END PFP */
 
@@ -115,7 +285,7 @@ int main(void)
   MX_TIM1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  SET_GPIO_EN();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,10 +297,13 @@ int main(void)
 		  if (strstr( data_ascii, "bouteille" ) == NULL)
 		  {
 
+
 			  RESET_GPIO_TEST_PIN();
+
 		  }
 		  else
 		  {
+			  Push_RESET();
 			  SET_GPIO_TEST_PIN();
 		  }
 		  LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);

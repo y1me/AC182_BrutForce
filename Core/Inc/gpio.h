@@ -42,6 +42,16 @@ void MX_GPIO_Init(void);
 void TOGGLE_GPIO_TEST_PIN(void);
 void SET_GPIO_TEST_PIN(void);
 void RESET_GPIO_TEST_PIN(void);
+void SET_GPIO_EN(void);
+void RESET_GPIO_EN(void);
+void SET_MUX_Y0(void);
+void SET_MUX_Y1(void);
+void SET_MUX_Y2(void);
+void SET_MUX_Y3(void);
+void SET_DEMUX_Y0(void);
+void SET_DEMUX_Y1(void);
+void SET_DEMUX_Y2(void);
+void SET_DEMUX_Y3(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
